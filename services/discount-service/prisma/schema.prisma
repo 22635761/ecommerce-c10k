@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Discount {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  code        String   @unique
+  name        String
+  description String?
+  
+  // Loại giảm giá: percentage, fixed, free_shipping
+  type        String   @default("percentage")
+  
+  // Giá trị giảm (có thể null với free_shipping)
+  value       Float?
+  
+  // Áp dụng cho: all, category, product
+  applyTo     String   @default("all")
+  applyIds    Json?    
+  
+  // Giới hạn
+  minOrderAmount Float?
+  maxDiscountAmount Float?
+  
+  // Số lượng
+  usageLimit  Int?
+  usedCount   Int      @default(0)
+  perUserLimit Int?
+  
+  // Thời gian
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserDiscount {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String
+  discountId String
+  usedCount  Int      @default(0)
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+  
+  @@unique([userId, discountId])
+}

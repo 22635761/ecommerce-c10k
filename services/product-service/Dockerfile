@@ -1,0 +1,17 @@
+FROM node:20-bullseye
+
+ENV NODE_OPTIONS="--max-old-space-size=2048 --max-http-header-size=16384"
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+COPY src ./src
+
+EXPOSE 3002
+
+CMD ["node", "src/server.js"]

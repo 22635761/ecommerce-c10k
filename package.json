@@ -1,0 +1,18 @@
+{
+  "name": "ecommerce-c10k-gateway",
+  "version": "1.0.0",
+  "main": "gateway/server.js",
+  "scripts": {
+    "gateway": "node gateway/server.js",
+    "dev:gateway": "nodemon gateway/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
