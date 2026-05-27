@@ -16,7 +16,10 @@ const AdminChat = () => {
   }, [selectedUser?.messages]);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3007');
+    const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+    const newSocket = io(gatewayUrl, {
+      transports: ['websocket']
+    });
 
     newSocket.on('connect', () => {
       console.log('Admin connected to chat');

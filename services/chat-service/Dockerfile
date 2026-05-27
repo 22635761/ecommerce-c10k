@@ -3,10 +3,10 @@ FROM node:20-bullseye
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 COPY server.js ./
 
 EXPOSE 3007
 
-CMD ["node", "server.js"]
+CMD ["node", "--max-old-space-size=2048", "server.js"]

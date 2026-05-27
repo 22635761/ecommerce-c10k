@@ -16,9 +16,11 @@ const Footer = () => {
     }
 
     // Hidden connection for tracking only
-    const socket = io('http://localhost:3007', {
+    const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+    const socket = io(gatewayUrl, {
       reconnectionAttempts: 5,
       timeout: 10000,
+      transports: ['websocket'],
       query: { deviceId } // Send to backend to unify tabs/sessions
     });
 

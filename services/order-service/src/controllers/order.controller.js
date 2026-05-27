@@ -428,6 +428,16 @@ class OrderController {
     }
   }
 
+  async getAdminStats(req, res) {
+    try {
+      const stats = await orderService.getAdminStats();
+      res.status(200).json({ success: true, data: stats });
+    } catch (error) {
+      console.error('Get admin stats error:', error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+
   async confirmPaymentFallback(req, res) {
     try {
       const { orderCode } = req.body;

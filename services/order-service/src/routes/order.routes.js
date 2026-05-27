@@ -29,6 +29,7 @@ router.post('/ghn/leadtime', orderController.getGHNLeadtime);
 router.get('/ghn/track/:orderCode', orderController.trackGHNOrder);
 
 // Admin routes
+router.get('/admin/stats', isAdmin, orderController.getAdminStats);
 router.get('/admin/all', isAdmin, orderController.getAllOrders);
 router.put('/admin/:orderId/status', isAdmin, orderController.updateOrderStatus);
 router.put('/admin/:orderId/payment-status', isAdmin, orderController.updatePaymentStatusAdmin);

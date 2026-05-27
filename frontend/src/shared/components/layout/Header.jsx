@@ -4,13 +4,15 @@ import {
   DevicePhoneMobileIcon, MagnifyingGlassIcon, 
   ShoppingCartIcon, UserIcon,
   ShieldCheckIcon, UserCircleIcon, HomeIcon,
-  ArrowRightOnRectangleIcon, ClipboardDocumentListIcon
+  ArrowRightOnRectangleIcon, ClipboardDocumentListIcon,
+  TicketIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../../features/auth/hooks/useAuth';
 import { useCart } from '../../../features/cart/context/CartContext';
 import LoginModal from '../../../features/auth/components/LoginModal';
 import RegisterModal from '../../../features/auth/components/RegisterModal';
 import ProfileModal from '../../../features/auth/components/ProfileModal';
+import DiscountsModal from '../../../features/auth/components/DiscountsModal';
 import productClient from '../../../api/product-api';
 import MegaMenu from './MegaMenu';
 
@@ -21,6 +23,7 @@ const Header = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isDiscountsModalOpen, setIsDiscountsModalOpen] = useState(false);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -289,6 +292,14 @@ const Header = () => {
                       <ClipboardDocumentListIcon className="w-5 h-5 text-gray-500" />
                       <span className="text-sm text-gray-700">Đơn mua</span>
                     </Link>
+
+                    <button 
+                      onClick={() => setIsDiscountsModalOpen(true)}
+                      className="flex items-center space-x-3 px-4 py-2 w-full text-left hover:bg-emerald-50 transition text-gray-700 cursor-pointer"
+                    >
+                      <TicketIcon className="w-5 h-5 text-gray-500" />
+                      <span className="text-sm">Ưu đãi của tôi</span>
+                    </button>
                     
                     {isAdmin() && (
                       <>
@@ -324,6 +335,7 @@ const Header = () => {
         setIsLoginModalOpen(true);
       }} />
       <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
+      <DiscountsModal isOpen={isDiscountsModalOpen} onClose={() => setIsDiscountsModalOpen(false)} />
     </>
   );
 };

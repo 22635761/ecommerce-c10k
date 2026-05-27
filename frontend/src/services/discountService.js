@@ -1,7 +1,8 @@
 import axios from 'axios';
+import API_BASE_URL from '../shared/api/config';
 
 const discountClient = axios.create({
-  baseURL: 'http://localhost:3006/api',
+  baseURL: `${API_BASE_URL}/api`,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });

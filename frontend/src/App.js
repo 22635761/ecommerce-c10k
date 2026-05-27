@@ -15,6 +15,7 @@ import AdminProducts from './features/admin/pages/AdminProducts';
 import AdminOrders from './features/admin/pages/AdminOrders';
 import AdminDiscounts from './features/admin/pages/AdminDiscounts';
 import AdminChat from './features/admin/pages/AdminChat';
+import AdminStats from './features/admin/pages/AdminStats';
 import ContactWidget from './shared/components/common/ContactWidget';
 
 function App() {
@@ -58,7 +59,7 @@ function App() {
             <Route path="products" element={<AdminProducts />} />
             <Route path="discounts" element={<AdminDiscounts />} />
             <Route path="chat" element={<AdminChat />} />
-            <Route path="stats" element={<div className="text-center py-8">Thống kê (Đang phát triển)</div>} />
+            <Route path="stats" element={<AdminStats />} />
             <Route path="settings" element={<div className="text-center py-8">Cài đặt (Đang phát triển)</div>} />
           </Route>
         </Routes>

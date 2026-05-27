@@ -4,12 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node --max-old-space-size=2048 server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.6.8",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "prom-client": "^15.1.3",

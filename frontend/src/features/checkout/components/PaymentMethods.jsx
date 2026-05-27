@@ -5,9 +5,6 @@ import { ShieldCheckIcon, BanknotesIcon, CreditCardIcon, QrCodeIcon } from '@her
 // Mock some local payment icons with emojis or text to emulate logos
 const paymentMethodsData = [
   { value: 'cod', label: 'Thanh toán khi nhận hàng', icon: BanknotesIcon, color: 'text-green-600', tag: 'An toàn' },
-  { value: 'vnpay', label: 'VNPay', icon: QrCodeIcon, color: 'text-blue-600', tag: 'Giảm 10k' },
-  { value: 'momo', label: 'Ví MoMo', icon: QrCodeIcon, color: 'text-pink-600', tag: '' },
-  { value: 'zalopay', label: 'Ví ZaloPay', icon: QrCodeIcon, color: 'text-blue-500', tag: '' },
   { value: 'sepay', label: 'Chuyển khoản (SePay)', icon: QrCodeIcon, color: 'text-indigo-600', tag: '' },
   { value: 'stripe', label: 'Thẻ Tín dụng/Ghi nợ', icon: CreditCardIcon, color: 'text-orange-500', tag: '' }
 ];

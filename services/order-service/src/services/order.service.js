@@ -187,6 +187,110 @@ class OrderService {
     });
     return order;
   }
+
+  async getAdminStats() {
+    // Fetch all orders to build rich aggregate statistics
+    const orders = await prisma.order.findMany({
+      orderBy: { createdAt: 'asc' }
+    });
+
+    const summary = {
+      totalRevenue: 0,
+      totalOrders: orders.length,
+      deliveredOrders: 0,
+      pendingOrders: 0,
+      cancelledOrders: 0,
+      averageOrderValue: 0
+    };
+
+    const monthlyMap = {};
+    const paymentMap = {};
+    const productMap = {};
+
+    let totalPaidSum = 0;
+    let totalPaidCount = 0;
+
+    for (const order of orders) {
+      const isPaid = order.paymentStatus === 'paid';
+      const orderTotal = order.total || 0;
+
+      // Overall Summary
+      if (isPaid) {
+        summary.totalRevenue += orderTotal;
+      }
+      
+      if (order.orderStatus === 'delivered') {
+        summary.deliveredOrders++;
+      } else if (order.orderStatus === 'pending') {
+        summary.pendingOrders++;
+      } else if (order.orderStatus === 'cancelled') {
+        summary.cancelledOrders++;
+      }
+
+      // Monthly Stats
+      const date = new Date(order.createdAt);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      if (!monthlyMap[monthKey]) {
+        monthlyMap[monthKey] = { month: monthKey, revenue: 0, orders: 0 };
+      }
+      monthlyMap[monthKey].orders++;
+      if (isPaid) {
+        monthlyMap[monthKey].revenue += orderTotal;
+      }
+
+      // Payment Method Stats
+      const pMethod = order.paymentMethod || 'cod';
+      paymentMap[pMethod] = (paymentMap[pMethod] || 0) + 1;
+
+      // Top Products Stats
+      let items = [];
+      try {
+        if (typeof order.items === 'string') {
+          items = JSON.parse(order.items);
+        } else if (Array.isArray(order.items)) {
+          items = order.items;
+        }
+      } catch (e) {
+        console.error('Error parsing order items for stats:', e);
+      }
+
+      if (Array.isArray(items)) {
+        for (const item of items) {
+          const pId = item.productId || item.id || 'unknown';
+          const pName = item.name || 'Sản phẩm không tên';
+          const pQty = parseInt(item.quantity) || 1;
+          const pPrice = parseFloat(item.price) || 0;
+
+          if (!productMap[pId]) {
+            productMap[pId] = { id: pId, name: pName, quantity: 0, revenue: 0 };
+          }
+          productMap[pId].quantity += pQty;
+          if (isPaid) {
+            productMap[pId].revenue += pPrice * pQty;
+          }
+        }
+      }
+    }
+
+    summary.averageOrderValue = summary.totalOrders > 0
+      ? Math.round(summary.totalRevenue / (orders.filter(o => o.paymentStatus === 'paid').length || 1))
+      : 0;
+
+    // Convert monthly map to sorted array
+    const monthlyStats = Object.values(monthlyMap).sort((a, b) => a.month.localeCompare(b.month));
+
+    // Convert products map to array and sort by quantity descending, limit to top 5
+    const topProducts = Object.values(productMap)
+      .sort((a, b) => b.quantity - a.quantity)
+      .slice(0, 5);
+
+    return {
+      summary,
+      monthlyStats,
+      paymentMethodStats: paymentMap,
+      topProducts
+    };
+  }
 }
 
 module.exports = new OrderService();
