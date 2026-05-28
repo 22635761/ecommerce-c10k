@@ -5,8 +5,9 @@ import {
   UserCircleIcon, KeyIcon, ClipboardDocumentListIcon,
   CheckCircleIcon, ExclamationCircleIcon, PencilSquareIcon
 } from '@heroicons/react/24/outline';
+import API_BASE_URL from '../../../shared/api/config';
 
-const API = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API = API_BASE_URL;
 const authHeader = () => ({
   'Content-Type': 'application/json',
   Authorization: `Bearer ${localStorage.getItem('token')}`

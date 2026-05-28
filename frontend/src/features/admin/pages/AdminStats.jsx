@@ -9,6 +9,7 @@ import {
   XCircleIcon,
   CreditCardIcon
 } from '@heroicons/react/24/outline';
+import API_BASE_URL from '../../../shared/api/config';
 
 const AdminStats = () => {
   const [stats, setStats] = useState(null);
@@ -21,7 +22,7 @@ const AdminStats = () => {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3004/api/orders/admin/stats', {
+      const response = await fetch(`${API_BASE_URL}/api/orders/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }

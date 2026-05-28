@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useCart } from '../../cart/context/CartContext';
+import API_BASE_URL from '../../../shared/api/config';
 
 const SuccessPage = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const SuccessPage = () => {
       //    COD: chưa thu tiền → giữ nguyên pending
       //    Stripe: đã verify qua /verify-stripe riêng
       if (paymentMethod === 'sepay') {
-        fetch('http://localhost:3004/api/orders/confirm-payment', {
+        fetch(`${API_BASE_URL}/api/orders/confirm-payment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

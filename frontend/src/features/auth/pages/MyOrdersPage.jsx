@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../../../shared/api/config';
 import { useAuth } from '../hooks/useAuth';
 import {
   ClockIcon, CheckCircleIcon, TruckIcon, HomeModernIcon,
@@ -143,7 +144,7 @@ const MyOrdersPage = () => {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:3004/api/orders/my-orders', {
+      const res = await fetch(`${API_BASE_URL}/api/orders/my-orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -162,7 +163,7 @@ const MyOrdersPage = () => {
     if (!window.confirm(`Xác nhận huỷ đơn hàng #${orderCode}?`)) return;
     setCancellingId(orderId);
     try {
-      const res = await fetch(`http://localhost:3004/api/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

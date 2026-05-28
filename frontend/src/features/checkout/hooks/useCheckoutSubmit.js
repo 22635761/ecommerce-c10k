@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { CardElement } from '@stripe/react-stripe-js';
+import API_BASE_URL from '../../../shared/api/config';
 
-const API = 'http://localhost:3004/api/orders';
+const API = `${API_BASE_URL}/api/orders`;
 const authHeader = () => ({
   'Content-Type': 'application/json',
   'Authorization': `Bearer ${localStorage.getItem('token')}`

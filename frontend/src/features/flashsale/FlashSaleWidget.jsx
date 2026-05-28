@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { BoltIcon, FireIcon, CheckCircleIcon, XCircleIcon, ClockIcon, Cog6ToothIcon } from '@heroicons/react/24/solid';
+import API_BASE_URL from '../../shared/api/config';
 
 const FlashSaleWidget = () => {
   const [saleData, setSaleData] = useState(null); // Complete data from /active
@@ -27,7 +28,7 @@ const FlashSaleWidget = () => {
   // Fetch Active Sale
   const fetchActiveSale = async () => {
     try {
-      const res = await axios.get(`http://localhost:3004/api/orders/flash-sale/active?t=${Date.now()}`);
+      const res = await axios.get(`${API_BASE_URL}/api/orders/flash-sale/active?t=${Date.now()}`);
       if(res.data.success && res.data.data) {
         setSaleData(res.data.data);
       } else {
@@ -54,7 +55,7 @@ const FlashSaleWidget = () => {
   const fetchProductsForAdmin = async () => {
     if(!isAdmin) return;
     try {
-      const res = await axios.get('http://localhost:3002/api/products');
+      const res = await axios.get(`${API_BASE_URL}/api/products`);
       if (res.data.success) {
         setAllProducts(res.data.data);
         if(res.data.data.length > 0) setSelectedProductId(res.data.data[0].id);
@@ -85,7 +86,7 @@ const FlashSaleWidget = () => {
         salePrice: parseInt(adminSalePrice)
       };
 
-      const res = await axios.post('http://localhost:3004/api/orders/admin/flash-sale/init', body, config);
+      const res = await axios.post(`${API_BASE_URL}/api/orders/admin/flash-sale/init`, body, config);
       if(res.data.success) {
         alert(res.data.message);
         setShowAdmin(false);
@@ -110,7 +111,7 @@ const FlashSaleWidget = () => {
     try {
       // 1. Gửi Lệnh Trừ Kho Tạm lên Redis (Bảo vệ C10K)
       // Note: LUA Script sẽ tự động chặn và báo lỗi nếu người thứ 11 bấm vào khi kho chỉ có 10
-      const res = await axios.post('http://localhost:3004/api/orders/flash-sale/buy', { productId: saleData.id });
+      const res = await axios.post(`${API_BASE_URL}/api/orders/flash-sale/buy`, { productId: saleData.id });
       
       // 2. Đá văng người dùng sang Trang Thanh Toán Độc Lập (như TikTok)
       // Không lưu vào giỏ hàng chung, mà pass thẳng qua Route State
