@@ -145,7 +145,10 @@ const MyOrdersPage = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch(`${API_BASE_URL}/api/orders/my-orders`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
       });
       const data = await res.json();
       if (data.success) setOrders(data.data);
@@ -167,7 +170,8 @@ const MyOrdersPage = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'ngrok-skip-browser-warning': 'true'
         },
         body: JSON.stringify({ status: 'cancelled' })
       });

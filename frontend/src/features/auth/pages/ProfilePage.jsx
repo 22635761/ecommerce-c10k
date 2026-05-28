@@ -10,7 +10,8 @@ import API_BASE_URL from '../../../shared/api/config';
 const API = API_BASE_URL;
 const authHeader = () => ({
   'Content-Type': 'application/json',
-  Authorization: `Bearer ${localStorage.getItem('token')}`
+  Authorization: `Bearer ${localStorage.getItem('token')}`,
+  'ngrok-skip-browser-warning': 'true'
 });
 
 // ─── Thông báo toast nhỏ ──────────────────────────────────────────────────

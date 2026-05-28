@@ -24,7 +24,8 @@ const AdminStats = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/orders/admin/stats`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'ngrok-skip-browser-warning': 'true'
         }
       });
       const resData = await response.json();
