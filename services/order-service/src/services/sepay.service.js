@@ -34,10 +34,11 @@ class SePayService {
     });
   }
 
-  createPayment(orderId, amount, orderCode) {
+  createPayment(orderId, amount, orderCode, returnUrl = null) {
     try {
       const safeAmount = Number(Math.round(Number(amount)));
       const safeOrderCode = String(orderCode || '').trim();
+      const actualReturnUrl = returnUrl || this.returnUrl;
 
       if (!safeOrderCode) {
         throw new Error('orderCode is required');
@@ -54,9 +55,9 @@ class SePayService {
         order_amount: safeAmount,
         currency: 'VND',
         order_description: `Thanh toan don hang ${safeOrderCode}`,
-        success_url: `${this.returnUrl}?success=true&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
-        cancel_url: `${this.returnUrl}?success=false&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
-        error_url: `${this.returnUrl}?success=false&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
+        success_url: `${actualReturnUrl}?success=true&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
+        cancel_url: `${actualReturnUrl}?success=false&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
+        error_url: `${actualReturnUrl}?success=false&order=${encodeURIComponent(safeOrderCode)}&method=sepay`,
         custom_data: JSON.stringify({
           orderId: String(orderId || ''),
           orderCode: safeOrderCode

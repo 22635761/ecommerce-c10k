@@ -124,7 +124,7 @@ class OrderController {
   // SEPAY
   async createSePayPayment(req, res) {
     try {
-      const { orderId, amount, orderCode } = req.body;
+      const { orderId, amount, orderCode, returnUrl } = req.body;
 
       if (!orderId || !orderCode) {
         return res.status(400).json({
@@ -141,7 +141,7 @@ class OrderController {
         });
       }
 
-      const result = sepayService.createPayment(orderId, parsedAmount, orderCode);
+      const result = sepayService.createPayment(orderId, parsedAmount, orderCode, returnUrl);
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
       console.error("SePay payment error:", error);
@@ -186,6 +186,44 @@ class OrderController {
     } catch (error) {
       console.error('SePay IPN error:', error);
       res.status(200).json({ success: false });
+    }
+  }
+
+  async cancelPaymentFailed(req, res) {
+    try {
+      const userId = req.user.userId;
+      const { orderCode } = req.body;
+
+      if (!orderCode) {
+        return res.status(400).json({ success: false, message: 'Thiếu orderCode' });
+      }
+
+      const order = await orderService.getOrderByCode(orderCode);
+      if (!order) {
+        return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng' });
+      }
+
+      // Security check
+      if (order.userId !== userId) {
+        return res.status(403).json({ success: false, message: 'Không có quyền truy cập đơn hàng này' });
+      }
+
+      // Only cancel if still pending
+      if (order.orderStatus === 'pending') {
+        const updated = await orderService.updateOrderStatus(order.id, 'cancelled');
+
+        // Restore inventory via RabbitMQ
+        if (updated.items) {
+          await publishInventoryCmd({ action: 'restore', items: updated.items });
+        }
+
+        return res.json({ success: true, message: 'Đã hủy đơn hàng và hoàn kho thành công' });
+      }
+
+      return res.json({ success: true, message: 'Đơn hàng đã được xử lý trước đó' });
+    } catch (error) {
+      console.error('Cancel payment failed error:', error);
+      res.status(500).json({ success: false, message: error.message });
     }
   }
   

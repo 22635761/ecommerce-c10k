@@ -124,7 +124,8 @@ export const useCheckoutSubmit = (deps) => {
         body: JSON.stringify({
           orderId: order.id,
           amount: Math.round(Number(finalTotal)),
-          orderCode: order.orderCode
+          orderCode: order.orderCode,
+          returnUrl: window.location.origin + '/checkout/success'
         })
       });
       const paymentResult = await paymentRes.json();

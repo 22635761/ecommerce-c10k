@@ -22,6 +22,7 @@ router.post('/create-stripe-payment', orderController.createStripePayment);
 router.post('/verify-stripe', orderController.verifyStripePayment);
 router.post('/confirm-payment', orderController.confirmPaymentFallback);
 router.post('/create-sepay-payment', orderController.createSePayPayment);
+router.post('/cancel-payment', orderController.cancelPaymentFailed);
 router.post('/calculate-shipping', orderController.calculateShippingFee);
 router.patch('/:orderId/status', orderController.cancelOrderByUser); // Khách huỷ đơn
 router.post('/ghn/services', orderController.getGHNServices);

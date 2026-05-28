@@ -32,6 +32,18 @@ const SuccessPage = () => {
           body: JSON.stringify({ orderCode })
         });
       }
+    } else if (!success && orderCode && !hasConfirmed.current) {
+      hasConfirmed.current = true;
+      // 3. Huỷ đơn hàng và Hoàn kho ngay lập tức khi thanh toán thất bại/huỷ bỏ
+      fetch(`${API_BASE_URL}/api/orders/cancel-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify({ orderCode })
+      });
     }
   }, [success, orderCode, paymentMethod, clearCart]);
 
