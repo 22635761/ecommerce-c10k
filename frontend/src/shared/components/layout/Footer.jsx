@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { UsersIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
+import API_BASE_URL from '../../api/config';
 
 const Footer = () => {
   const [online, setOnline] = useState(0);
@@ -16,7 +17,7 @@ const Footer = () => {
     }
 
     // Hidden connection for tracking only
-    const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+    const gatewayUrl = API_BASE_URL;
     const socket = io(gatewayUrl, {
       reconnectionAttempts: 5,
       timeout: 10000,

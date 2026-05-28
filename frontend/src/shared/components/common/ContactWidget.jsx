@@ -3,6 +3,7 @@ import { ChatBubbleLeftRightIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicon
 import { useAuth } from '../../../features/auth/hooks/useAuth';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../../api/config';
 
 const ContactWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,7 @@ const ContactWidget = () => {
   // Admin Notification Socket
   useEffect(() => {
     if (amIAdmin) {
-      const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+      const gatewayUrl = API_BASE_URL;
       const adminSocket = io(gatewayUrl, {
         transports: ['websocket']
       });
@@ -70,7 +71,7 @@ const ContactWidget = () => {
   useEffect(() => {
     if (showChat && user && !amIAdmin) {
       // Connect to the API gateway (balanced across scaling replicas)
-      const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+      const gatewayUrl = API_BASE_URL;
       const newSocket = io(gatewayUrl, {
         transports: ['websocket']
       });
@@ -99,7 +100,7 @@ const ContactWidget = () => {
   // Normal User AI Chat Socket
   useEffect(() => {
     if (showAiChat && user && !amIAdmin) {
-      const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+      const gatewayUrl = API_BASE_URL;
       const newSocket = io(gatewayUrl, {
         transports: ['websocket']
       });

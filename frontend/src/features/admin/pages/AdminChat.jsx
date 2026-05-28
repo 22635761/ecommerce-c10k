@@ -3,6 +3,8 @@ import { io } from 'socket.io-client';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { UserCircleIcon, PaperAirplaneIcon, EnvelopeIcon, EnvelopeOpenIcon } from '@heroicons/react/24/outline';
 
+import API_BASE_URL from '../../../shared/api/config';
+
 const AdminChat = () => {
   const { user } = useAuth();
   const [socket, setSocket] = useState(null);
@@ -16,7 +18,7 @@ const AdminChat = () => {
   }, [selectedUser?.messages]);
 
   useEffect(() => {
-    const gatewayUrl = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:8080';
+    const gatewayUrl = API_BASE_URL;
     const newSocket = io(gatewayUrl, {
       transports: ['websocket']
     });
