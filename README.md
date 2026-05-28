@@ -202,6 +202,46 @@ Hệ thống đã tích hợp sẵn k6 và Grafana Dashboard để bạn trình 
    - Truy cập **[http://localhost:3030](http://localhost:3030)** (Tài khoản/Mật khẩu mặc định: `admin` / `admin`).
    - Mở dashboard **"Visitor Tracking"** để chứng kiến con số kết nối tăng mạnh mẽ lên mốc 10,000 người dùng trực tuyến đồng thời cực kỳ mãn nhãn!
 
+### 4.1. Giải Thích Chi Tiết Các Đồ Thị Trên Dashboard "C10K Real-time Traffic" (Grafana)
+
+Khi truy cập vào Grafana, bạn sẽ thấy hệ thống đo lường các chỉ số sức khỏe của các Microservices theo thời gian thực như sau:
+
+#### A. Nhóm 1: Real-time Online Visitors (Theo dõi lượng khách trực tuyến)
+*   **Current Live User Count (Số lượng người dùng trực tuyến hiện tại):** 
+    *   *Mô tả:* Đếm số lượng kết nối WebSockets thực tế đang hoạt động đồng thời (Active Connections) qua `chat-service`.
+    *   *Ý nghĩa:* Đây là chỉ số "sống" của hệ thống. Khi chạy Load Test k6, con số này sẽ tự động tăng vọt từ vài người lên đúng mốc **10,000** người dùng trực tuyến đồng thời vô cùng ấn tượng.
+*   **Online Users / Total Cumulated Traffic / Total Historic Visits:** Thống kê tổng số lượng khách hàng truy cập tích lũy và số lượt ghé thăm ghi nhận trong cơ sở dữ liệu lịch sử hệ thống.
+
+#### B. Nhóm 2: Performance & Throughput (Hiệu năng xử lý API các Microservices)
+*   **Throughput by Microservice (Requests/sec - Tần suất xử lý yêu cầu):**
+    *   *Mô tả:* Đo lường số lượng yêu cầu HTTP (RPS - Requests Per Second) mà từng microservice con (`auth`, `cart`, `discount`, `order`, `product`) đang xử lý trong mỗi giây.
+    *   *Ý nghĩa:* Giúp doanh nghiệp biết được tính năng nào đang được truy cập nhiều nhất để phân bổ hạ tầng hợp lý.
+*   **Average Request Latency (Seconds - Độ trễ trung bình của các yêu cầu):**
+    *   *Mô tả:* Thời gian phản hồi (Response Time) từ lúc khách hàng click gửi yêu cầu đến khi nhận được phản hồi từ server của từng dịch vụ.
+    *   *Ý nghĩa:* Càng thấp càng tốt (dưới 0.1s - 0.2s là cực kỳ xuất sắc). Nếu đường biểu diễn vọt lên cao báo hiệu dịch vụ đó đang gặp tình trạng thắt nút cổ chai (bottleneck).
+*   **Concurrent Active Connections (Số lượng kết nối song song đang xử lý):**
+    *   *Mô tả:* Số lượng luồng kết nối mạng đồng thời đang mở tại một thời điểm trên từng microservice để xử lý yêu cầu.
+
+#### C. Nhóm 3: Reliability & Error Rates (Độ tin cậy & Tỷ lệ lỗi hệ thống)
+*   **System 5xx HTTP Error Rate (req/sec - Tỷ lệ lỗi máy chủ 5xx):**
+    *   *Mô tả:* Đếm số lượng lỗi hệ thống (như `500 Internal Server Error` hoặc `502 Bad Gateway`) phát sinh trên mỗi giây.
+    *   *Ý nghĩa (Thành tựu):* **Chỉ số này phải luôn bằng 0 tuyệt đối**. Dù hệ thống có gánh tải 10,000 kết nối đồng thời, biểu đồ vẫn phải hiển thị số 0, chứng minh hệ thống Microservices đạt độ ổn định và tin cậy hoàn hảo 100% dưới áp lực tải cực hạn.
+
+#### D. Nhóm 4: Microservices System Resources (Tài nguyên phần cứng hệ thống)
+*   **CPU Usage by Microservice (%) (Tỷ lệ sử dụng vi xử lý CPU):**
+    *   *Mô tả:* Đo lượng tài nguyên chip CPU tiêu thụ của từng container microservice.
+    *   *Ý nghĩa:* Giúp xác định dịch vụ nào ngốn CPU nhất để đưa ra quyết định co giãn tự động (**Auto-scaling**) trên các đám mây như AWS.
+*   **Memory Usage (Resident Set Size - Dung lượng RAM thực tế tiêu thụ):**
+    *   *Mô tả:* Dung lượng RAM (MB) thực tế mà hệ điều hành cấp phát cho từng tiến trình Node.js đang chạy.
+    *   *Ý nghĩa:* Đồ thị này phải đi ngang ổn định, chứng minh code tối ưu, không có hiện tượng **Memory Leak** (rò rỉ bộ nhớ gây sập app sau thời gian dài sử dụng).
+
+#### E. Nhóm 5: Node.js Engine Health & Event Loop (Đặc tính sâu của động cơ Node.js)
+*   **Node.js Event Loop Lag (Seconds - Độ trễ của vòng lặp sự kiện):**
+    *   *Mô tả:* Node.js chạy đơn luồng (Single-thread). Nếu có tác vụ nghẽn (Block Event Loop), toàn bộ hệ thống sẽ bị chậm lại.
+    *   *Ý nghĩa:* Loop Lag luôn ở mức cực thấp (gần như bằng 0 giây) chứng minh mã nguồn viết chuẩn bất đồng bộ (Asynchronous) hoàn toàn, không bị nghẽn luồng xử lý chính.
+*   **Node.js Active Event Loop Handles (Số lượng tài nguyên đang mở):**
+    *   *Mô tả:* Thống kê quy mô công việc nội bộ (như database connections đang mở, sockets đang kết nối, bộ hẹn giờ timers...) mà Event Loop đang quản lý.
+
 ---
 
 ## 🎓 5. Cẩm Nang Trình Bày & Trả Lời Câu Hỏi Hội Đồng (Presentation & Interview Q&A)
