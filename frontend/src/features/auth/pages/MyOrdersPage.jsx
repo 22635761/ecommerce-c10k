@@ -188,6 +188,8 @@ const MyOrdersPage = () => {
   };
 
   const getPaymentBadge = (order) => {
+    if (order.orderStatus === 'cancelled')
+      return <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-100 border border-red-200 text-red-700">Đã hủy</span>;
     if (order.paymentStatus === 'paid')
       return <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 border border-emerald-200 text-emerald-700">✓ Đã thanh toán</span>;
     if (order.paymentStatus === 'unpaid' || order.paymentMethod === 'cod')
