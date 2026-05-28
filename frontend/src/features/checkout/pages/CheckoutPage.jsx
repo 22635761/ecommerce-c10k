@@ -19,7 +19,7 @@ import PaymentMethods from '../components/PaymentMethods';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK || 'pk_test_51TFHkSLFOoleIVMFGcT1fj9umcYl2kj8KrXmFq7JU7tigKIrRJSB2Ik3amNANvkbKHsGcGZxOr6KgFzlzw5LsXiL00amVrtWvw');
 
-import API_BASE_URL from '../../../../shared/api/config';
+import API_BASE_URL from '../../../shared/api/config';
 const API_BASE = API_BASE_URL;
 
 const CheckoutForm = ({ cart, total, user }) => {

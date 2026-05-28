@@ -5,7 +5,7 @@ import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../../auth/hooks/useAuth';
 
-import API_BASE_URL from '../../../../shared/api/config';
+import API_BASE_URL from '../../../shared/api/config';
 const API_BASE = API_BASE_URL;
 
 const CartPage = () => {
