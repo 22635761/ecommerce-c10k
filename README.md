@@ -65,6 +65,8 @@ Dưới đây là chi tiết toàn bộ các công nghệ cốt lõi được á
     *   *Cách sử dụng:* Cổng thanh toán chuyển khoản ngân hàng tự động dành cho cá nhân thông qua VietQR. Hệ thống tự động sinh mã QR động chứa đúng số tiền và nội dung chuyển khoản mã hóa riêng cho từng đơn hàng. Khi khách hàng quét mã chuyển khoản thành công, ngân hàng sẽ gửi Webhook (IPN) bảo mật đến `order-service`, hệ thống tự động duyệt đơn hàng sau 1 giây!
 *   **Giao Hàng Nhanh (GHN API) & vn-provinces:**
     *   *Cách sử dụng:* Tích hợp trực tiếp API chính thức của GHN để tự động đồng bộ hóa danh sách Phường/Xã/Quận/Huyện toàn Việt Nam thông qua thư viện `vn-provinces`, tự động tính toán phí vận chuyển chính xác theo khoảng cách địa lý, trọng lượng hàng hóa và hiển thị thời gian shipper giao hàng dự kiến.
+*   **Goong Maps API (Goong.io) & Leaflet OpenStreetMap:**
+    *   *Cách sử dụng:* Tích hợp dịch vụ bản đồ số thuần Việt **Goong Maps** vào biểu mẫu nhập địa chỉ nhận hàng (`AddressForm.jsx`). Khi người dùng gõ tên đường, **Goong Place AutoComplete API** tự động gợi ý các vị trí chuẩn xác. **Goong Place Detail và Geocoding API** được sử dụng để chuyển đổi từ tên địa chỉ thành tọa độ địa lý (Latitude/Longitude). Từ đó, **Leaflet** kết hợp với **OpenStreetMap** để hiển thị bản đồ trực quan ngay trên giao diện, ghim vị trí nhận hàng và thực hiện hiệu ứng bay (`flyTo`) mượt mà đến điểm đã chọn, mang lại trải nghiệm chuyên nghiệp tương tự Grab/Shopee.
 
 ### 1.6. Giám Sát Chỉ Số & Load Test C10K (DevOps & Monitoring)
 *   **Socket.io (WebSockets):**
