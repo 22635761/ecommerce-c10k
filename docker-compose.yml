@@ -273,10 +273,10 @@ services:
       NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
     command:
       - "http"
-      - "order-service:3004"
+      - "gateway:80"
       - "--log=stdout"
     depends_on:
-      - order-service
+      - gateway
     networks:
       - ecommerce-network
 
