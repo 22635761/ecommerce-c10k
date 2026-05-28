@@ -42,12 +42,6 @@ const redisClient = createClient({
 redisClient.on('error', err => console.error('[REDIS] Client Error', err));
 redisClient.connect().then(async () => {
   console.log('[REDIS] Connected successfully to Redis tracking DB.');
-  
-  // DỌN DẸP DỮ LIỆU RÁC KHI RESTART SERVER
-  // Vì nếu Node bị sập, các Socket cũ mất mà chưa kịp gọi lệnh "disconnect" giảm đi 1
-  // Nên ta phải flush sách đếm tab hiện tại trên node này để đếm lại từ đầu!
-  await redisClient.del('device_tabs');
-  await redisClient.set('online_count', 0);
 
   // Initialize total visits if not exists
   const exists = await redisClient.get('total_visits');
@@ -58,7 +52,9 @@ redisClient.connect().then(async () => {
   // Set initial metrics
   const total = await redisClient.get('total_visits');
   totalVisitsGauge.set(parseInt(total || 1500));
-  onlineUsersGauge.set(0);
+  
+  const online = await redisClient.zCard('online_devices');
+  onlineUsersGauge.set(online);
 }).catch(console.error);
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -181,35 +177,28 @@ io.on('connection', async (socket) => {
   }
 
   if (deviceId) {
+    socket.deviceId = deviceId;
     try {
-      // HINCRBY là Lệnh Nguyên tử (Atomic). Nếu có 7 Sockets từ cùng 1 thiết bị lao vào cùng lúc (do Bug React)
-      // thì Redis sẽ xếp hàng và gán tuần tự: 1, 2, 3, 4, 5, 6, 7. 
-      // Chỉ duy nhất 1 Socket bắt được số 1, loại bỏ hoàn toàn lỗi Race Condition.
-      const tabsCount = await redisClient.hIncrBy('device_tabs', deviceId, 1);
-      
-      let online = parseInt(await redisClient.get('online_count') || 0);
-      let total = parseInt(await redisClient.get('total_visits') || 1500);
+      // 1. Refresh or create 30-minute session for this device
+      const sessionKey = `session:${deviceId}`;
+      const isNewSession = await redisClient.set(sessionKey, '1', {
+        NX: true,
+        EX: 1800 // 30 minutes
+      });
 
-      if (tabsCount === 1) {
-        // Khi quay về 1, ta kiểm tra xem họ là TRUY CẬP MỚI hay chỉ là CHỚP TẮT (Reload)
-        const inGracePeriod = await redisClient.get(`grace:${deviceId}`);
-        
-        if (inGracePeriod) {
-          // Chỉ là tải lại trang! Xóa cờ ân hạn, KHÔNG TĂNG LƯỢT MỚI!
-          await redisClient.del(`grace:${deviceId}`);
-        } else {
-          // Người dùng hoàn toàn mới!
-          online = await redisClient.incr('online_count');
-          total = await redisClient.incr('total_visits');
-          onlineUsersGauge.set(online);
-          totalVisitsGauge.set(total);
-        }
+      if (isNewSession) {
+        await redisClient.incr('total_visits');
       }
 
-      // Gửi số liệu trực tiếp tới client vừa kết nối (unicast) thay vì broadcast toàn hệ thống O(N^2)
+      // 2. Add device to active devices set immediately
+      await redisClient.zAdd('online_devices', { score: Date.now(), value: deviceId });
+
+      // Fetch current stats to return to this client immediately
+      const online = await redisClient.zCard('online_devices');
+      const total = parseInt(await redisClient.get('total_visits') || 1500);
       socket.emit('visitor_stats', { online, total });
     } catch (err) {
-      console.error('[REDIS] Tăng biến theo dõi lỗi', err);
+      console.error('[REDIS] Error tracking connection:', err);
     }
   }
 
@@ -473,36 +462,10 @@ io.on('connection', async (socket) => {
     
     if (deviceId) {
       try {
-        const tabsCount = await redisClient.hIncrBy('device_tabs', deviceId, -1);
-
-        // THUẬT TOÁN DEBOUNCE C10K:
-        if (tabsCount <= 0) {
-          // Đánh dấu cờ Ân hạn thời gian 5 giây
-          await redisClient.setEx(`grace:${deviceId}`, 5, "1");
-
-          setTimeout(async () => {
-            try {
-              const currentTabs = Number(await redisClient.hGet('device_tabs', deviceId));
-              
-              // Nếu thực sự họ đi mất (vẫn <= 0)
-              if (currentTabs <= 0) {
-                await redisClient.hDel('device_tabs', deviceId); 
-                await redisClient.del(`grace:${deviceId}`);
-                let online = await redisClient.decr('online_count');
-                if (online < 0) {
-                  online = 0;
-                  await redisClient.set('online_count', 0);
-                }
-                onlineUsersGauge.set(online);
-                // Không broadcast toàn hệ thống ở đây để tránh nghẽn CPU khi lượng disconnect lớn
-              }
-            } catch (e) {
-              console.error(e);
-            }
-          }, 3000); 
-        }
+        // Remove device from online_devices immediately on disconnect
+        await redisClient.zRem('online_devices', deviceId);
       } catch (err) {
-         console.error('[REDIS] Lỗi giảm truy cập: ', err);
+         console.error('[REDIS] Error removing device on disconnect: ', err);
       }
     }
   });
@@ -512,8 +475,27 @@ io.on('connection', async (socket) => {
 // Điều này giúp giảm đáng kể tải CPU và băng thông mạng từ O(N^2) xuống O(1)
 setInterval(async () => {
   try {
-    const online = parseInt(await redisClient.get('online_count') || 0);
+    // 1. Refresh presence of all local devices connected to this container in bulk
+    const localDevices = [];
+    for (const socket of io.sockets.sockets.values()) {
+      if (socket.deviceId) {
+        localDevices.push({ score: Date.now(), value: socket.deviceId });
+      }
+    }
+    if (localDevices.length > 0) {
+      await redisClient.zAdd('online_devices', localDevices);
+    }
+
+    // 2. Clean up stale devices (older than 10 seconds)
+    const cutoff = Date.now() - 10000;
+    await redisClient.zRemRangeByScore('online_devices', 0, cutoff);
+
+    // 3. Fetch global numbers and broadcast
+    const online = await redisClient.zCard('online_devices');
     const total = parseInt(await redisClient.get('total_visits') || 1500);
+
+    onlineUsersGauge.set(online);
+    totalVisitsGauge.set(total);
     io.emit('visitor_stats', { online, total });
   } catch (err) {
     // Bỏ qua lỗi kết nối tạm thời
