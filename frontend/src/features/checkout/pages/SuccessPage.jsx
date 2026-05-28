@@ -26,7 +26,8 @@ const SuccessPage = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'ngrok-skip-browser-warning': 'true'
           },
           body: JSON.stringify({ orderCode })
         });

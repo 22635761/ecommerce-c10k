@@ -28,7 +28,9 @@ const FlashSaleWidget = () => {
   // Fetch Active Sale
   const fetchActiveSale = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/orders/flash-sale/active?t=${Date.now()}`);
+      const res = await axios.get(`${API_BASE_URL}/api/orders/flash-sale/active?t=${Date.now()}`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       if(res.data.success && res.data.data) {
         setSaleData(res.data.data);
       } else {
@@ -55,7 +57,9 @@ const FlashSaleWidget = () => {
   const fetchProductsForAdmin = async () => {
     if(!isAdmin) return;
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/products`);
+      const res = await axios.get(`${API_BASE_URL}/api/products`, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       if (res.data.success) {
         setAllProducts(res.data.data);
         if(res.data.data.length > 0) setSelectedProductId(res.data.data[0].id);
@@ -78,7 +82,12 @@ const FlashSaleWidget = () => {
       
       const startTimeMs = new Date(adminStartTime).getTime();
       
-      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const config = { 
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        } 
+      };
       const body = {
         productId: selectedProductId,
         quantity: parseInt(adminQty),
@@ -111,7 +120,9 @@ const FlashSaleWidget = () => {
     try {
       // 1. Gửi Lệnh Trừ Kho Tạm lên Redis (Bảo vệ C10K)
       // Note: LUA Script sẽ tự động chặn và báo lỗi nếu người thứ 11 bấm vào khi kho chỉ có 10
-      const res = await axios.post(`${API_BASE_URL}/api/orders/flash-sale/buy`, { productId: saleData.id });
+      const res = await axios.post(`${API_BASE_URL}/api/orders/flash-sale/buy`, { productId: saleData.id }, {
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      });
       
       // 2. Đá văng người dùng sang Trang Thanh Toán Độc Lập (như TikTok)
       // Không lưu vào giỏ hàng chung, mà pass thẳng qua Route State

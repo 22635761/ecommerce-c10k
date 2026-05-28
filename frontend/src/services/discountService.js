@@ -4,7 +4,10 @@ import API_BASE_URL from '../shared/api/config';
 const discountClient = axios.create({
   baseURL: `${API_BASE_URL}/api`,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { 
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true'
+  },
 });
 
 discountClient.interceptors.request.use((config) => {
