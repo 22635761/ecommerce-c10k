@@ -5,7 +5,8 @@ import { CheckBadgeIcon } from '@heroicons/react/24/solid';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../../auth/hooks/useAuth';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+import API_BASE_URL from '../../../../shared/api/config';
+const API_BASE = API_BASE_URL;
 
 const CartPage = () => {
   const { cart, loading, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -45,7 +46,9 @@ const CartPage = () => {
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/discounts/active`);
+        const res = await fetch(`${API_BASE}/api/discounts/active`, {
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         const data = await res.json();
         if (data.success) setActiveVouchers(data.data || []);
       } catch (e) { /* Bỏ qua lỗi */ }
@@ -91,7 +94,10 @@ const CartPage = () => {
     try {
       const res = await fetch(`${API_BASE}/api/discounts/validate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({ code: codeToApply, subtotal: selectedSubtotal, items: selectedCartObjects })
       });
       const data = await res.json();

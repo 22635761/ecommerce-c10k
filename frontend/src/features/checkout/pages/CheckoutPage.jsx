@@ -19,7 +19,8 @@ import PaymentMethods from '../components/PaymentMethods';
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK || 'pk_test_51TFHkSLFOoleIVMFGcT1fj9umcYl2kj8KrXmFq7JU7tigKIrRJSB2Ik3amNANvkbKHsGcGZxOr6KgFzlzw5LsXiL00amVrtWvw');
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+import API_BASE_URL from '../../../../shared/api/config';
+const API_BASE = API_BASE_URL;
 
 const CheckoutForm = ({ cart, total, user }) => {
   const stripe = useStripe();
@@ -101,7 +102,9 @@ const CheckoutForm = ({ cart, total, user }) => {
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/discounts/active`);
+        const res = await fetch(`${API_BASE}/api/discounts/active`, {
+          headers: { 'ngrok-skip-browser-warning': 'true' }
+        });
         const data = await res.json();
         if (data.success) setActiveVouchers(data.data || []);
       } catch (e) { /* ignore */ }
@@ -185,7 +188,10 @@ const CheckoutForm = ({ cart, total, user }) => {
     try {
       const res = await fetch(`${API_BASE}/api/discounts/validate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({ code: codeToApply, subtotal, items: cart.items })
       });
       const data = await res.json();
