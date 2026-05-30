@@ -178,27 +178,33 @@ io.on('connection', async (socket) => {
 
   if (deviceId) {
     socket.deviceId = deviceId;
-    try {
-      // 1. Refresh or create 30-minute session for this device
-      const sessionKey = `session:${deviceId}`;
-      const isNewSession = await redisClient.set(sessionKey, '1', {
-        NX: true,
-        EX: 1800 // 30 minutes
-      });
+    
+    // Chỉ xử lý Redis và Broadcast đối với khách hàng thực tế (không phải k6)
+    const isK6 = deviceId.startsWith('k6_device');
+    if (!isK6) {
+      socket.join('normal_users');
+      try {
+        // 1. Refresh or create 30-minute session for this device
+        const sessionKey = `session:${deviceId}`;
+        const isNewSession = await redisClient.set(sessionKey, '1', {
+          NX: true,
+          EX: 1800 // 30 minutes
+        });
 
-      if (isNewSession) {
-        await redisClient.incr('total_visits');
+        if (isNewSession) {
+          await redisClient.incr('total_visits');
+        }
+
+        // 2. Add device to active devices set immediately
+        await redisClient.zAdd('online_devices', { score: Date.now(), value: deviceId });
+
+        // Fetch current stats to return to this client immediately
+        const online = await redisClient.zCard('online_devices');
+        const total = parseInt(await redisClient.get('total_visits') || 1500);
+        socket.emit('visitor_stats', { online, total });
+      } catch (err) {
+        console.error('[REDIS] Error tracking connection:', err);
       }
-
-      // 2. Add device to active devices set immediately
-      await redisClient.zAdd('online_devices', { score: Date.now(), value: deviceId });
-
-      // Fetch current stats to return to this client immediately
-      const online = await redisClient.zCard('online_devices');
-      const total = parseInt(await redisClient.get('total_visits') || 1500);
-      socket.emit('visitor_stats', { online, total });
-    } catch (err) {
-      console.error('[REDIS] Error tracking connection:', err);
     }
   }
 
@@ -496,7 +502,7 @@ setInterval(async () => {
 
     onlineUsersGauge.set(online);
     totalVisitsGauge.set(total);
-    io.emit('visitor_stats', { online, total });
+    io.to('normal_users').emit('visitor_stats', { online, total });
   } catch (err) {
     // Bỏ qua lỗi kết nối tạm thời
   }

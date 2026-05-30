@@ -210,6 +210,7 @@ services:
       NODE_ENV: production
       REDIS_URL: redis://redis-cache:6379
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      NODE_OPTIONS: "--max-old-space-size=1536"
     networks:
       - ecommerce-network
     ulimits:
