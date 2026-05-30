@@ -4,6 +4,8 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const { createClient } = require('redis');
 const promClient = require('prom-client');
+const instanceId = process.env.HOSTNAME || Math.random().toString(36).substring(2, 15);
+
 
 // Prometheus Registry setup
 const register = new promClient.Registry();
@@ -477,17 +479,24 @@ io.on('connection', async (socket) => {
   });
 });
 
-// Thao tác phát (broadcast) định kỳ số liệu truy cập cứ 3 giây một lần cho tất cả client
-// Điều này giúp giảm đáng kể tải CPU và băng thông mạng từ O(N^2) xuống O(1)
 setInterval(async () => {
   try {
-    // 1. Refresh presence of all local devices connected to this container in bulk
+    // 1. Refresh presence of all local devices connected to this container in bulk (skip k6)
     const localDevices = [];
+    let localK6Count = 0;
     for (const socket of io.sockets.sockets.values()) {
       if (socket.deviceId) {
-        localDevices.push({ score: Date.now(), value: socket.deviceId });
+        if (socket.deviceId.startsWith('k6_device')) {
+          localK6Count++;
+        } else {
+          localDevices.push({ score: Date.now(), value: socket.deviceId });
+        }
       }
     }
+
+    // Write local k6 count to Redis with a 10s expiration
+    await redisClient.set(`chat_service:k6_count:${instanceId}`, localK6Count.toString(), { EX: 10 });
+
     if (localDevices.length > 0) {
       await redisClient.zAdd('online_devices', localDevices);
     }
@@ -497,7 +506,17 @@ setInterval(async () => {
     await redisClient.zRemRangeByScore('online_devices', 0, cutoff);
 
     // 3. Fetch global numbers and broadcast
-    const online = await redisClient.zCard('online_devices');
+    const normalOnline = await redisClient.zCard('online_devices');
+
+    // Sum global k6 counts from all active replicas
+    const keys = await redisClient.keys('chat_service:k6_count:*');
+    let globalK6Count = 0;
+    for (const key of keys) {
+      const val = await redisClient.get(key);
+      globalK6Count += parseInt(val || '0');
+    }
+
+    const online = normalOnline + globalK6Count;
     const total = parseInt(await redisClient.get('total_visits') || 1500);
 
     onlineUsersGauge.set(online);
