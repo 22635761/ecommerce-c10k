@@ -605,5 +605,6 @@
   },
   "timezone": "browser",
   "title": "C10K APM Real-time Dashboard",
-  "version": 1
+  "uid": "c10k-traffic-dashboard",
+  "version": 100
 }
