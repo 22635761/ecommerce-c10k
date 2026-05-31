@@ -80,6 +80,19 @@
         "text": {},
         "textMode": "auto"
       },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "ecommerce_online_users",
+          "legendFormat": "Online Users",
+          "range": true,
+          "refId": "A"
+        }
+      ],
       "title": "⚡ REAL-TIME ONLINE USERS (C10K TARGET)",
       "type": "stat"
     },
@@ -606,5 +619,5 @@
   "timezone": "browser",
   "title": "C10K APM Real-time Dashboard",
   "uid": "c10k-apm-dashboard",
-  "version": 1
+  "version": 2
 }
