@@ -62,7 +62,7 @@
         "h": 5,
         "x": 0,
         "y": 0,
-        "w": 8
+        "w": 12
       },
       "id": 1,
       "options": {
@@ -114,9 +114,9 @@
       },
       "gridPos": {
         "h": 5,
-        "x": 8,
+        "x": 12,
         "y": 0,
-        "w": 8
+        "w": 12
       },
       "id": 2,
       "options": {
@@ -141,67 +141,13 @@
             "uid": null
           },
           "editorMode": "code",
-          "expr": "ecommerce_total_visits",
+          "expr": "max(ecommerce_total_visits)",
           "legendFormat": "Total Visits",
           "range": true,
           "refId": "A"
         }
       ],
       "title": "📊 CUMULATIVE SYSTEM VISITS",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": null
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed"
-          },
-          "fixedColor": "#B877FF",
-          "mappings": [],
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "x": 16,
-        "y": 0,
-        "w": 8
-      },
-      "id": 3,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": null
-          },
-          "editorMode": "code",
-          "expr": "sum(nodejs_active_handles_total{service=\"chat\"})",
-          "legendFormat": "Active Handles",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "🔌 ACTIVE TCP HANDLES (SOCKET CONNECTIONS)",
       "type": "stat"
     },
     {
@@ -730,5 +676,5 @@
   "timezone": "browser",
   "title": "C10K APM Real-time Dashboard",
   "uid": "c10k-apm-dashboard",
-  "version": 3
+  "version": 5
 }
