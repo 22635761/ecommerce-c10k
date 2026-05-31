@@ -596,6 +596,117 @@
       ],
       "title": "🛑 HTTP RESPONSE STATUS CODE DISTRIBUTION (2XX VS 5XX)",
       "type": "piechart"
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "🖥️ HOST AZURE VPS SYSTEM RESOURCE METRICS (2 vCPUs, 4GB RAM)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "panels": []
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "fixedColor": "#E5A212",
+          "mappings": [],
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[1m])) * 100)",
+          "legendFormat": "Host CPU Usage (%)",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "🖥️ HOST VPS TOTAL CPU LOAD (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "fixedColor": "#A352FC",
+          "mappings": [],
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
+          "legendFormat": "Host RAM Usage (%)",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "🖥️ HOST VPS TOTAL RAM USAGE (%)",
+      "type": "timeseries"
     }
   ],
   "schemaVersion": 39,
@@ -619,5 +730,5 @@
   "timezone": "browser",
   "title": "C10K APM Real-time Dashboard",
   "uid": "c10k-apm-dashboard",
-  "version": 2
+  "version": 3
 }
