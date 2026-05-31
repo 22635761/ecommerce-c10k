@@ -7,7 +7,7 @@ services:
       - "27018:27017"
     volumes:
       - mongodb_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--wiredTigerCacheSizeGB", "0.25"]
     networks:
       - ecommerce-network
     healthcheck:
