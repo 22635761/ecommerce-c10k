@@ -332,7 +332,7 @@ services:
       - ecommerce-network
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    image: ghcr.io/google/cadvisor:v0.53.0
     container_name: cadvisor
     restart: always
     privileged: true
@@ -341,13 +341,21 @@ services:
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
+      - /run/containerd/containerd.sock:/run/containerd/containerd.sock:ro
+      - /var/lib/containerd:/var/lib/containerd:ro
       - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     ports:
       - "8085:8080"
     networks:
       - ecommerce-network
+    command:
+      - --containerd=/run/containerd/containerd.sock
+      - --containerd-namespace=moby
+      - --docker_only=true
+      - --disable_metrics=disk,diskIO,tcp,udp
+      - --docker_root=/var/empty
+      - --docker=unix:///var/run/nonexistent.sock
 
   k6:
     image: grafana/k6:latest
