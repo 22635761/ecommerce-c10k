@@ -799,7 +799,7 @@
             "uid": null
           },
           "editorMode": "code",
-          "expr": "label_replace(container_spec_memory_limit_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"}, \"service\", \"$1\", \"image\", \".*(chat-service|frontend|order-service|auth-service|product-service|cart-service|discount-service|mongo|redis|nginx|rabbitmq).*\")",
+          "expr": "label_replace((container_spec_memory_limit_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"} > 0 or on() machine_memory_bytes), \"service\", \"$1\", \"image\", \".*(chat-service|frontend|order-service|auth-service|product-service|cart-service|discount-service|mongo|redis|nginx|rabbitmq).*\")",
           "legendFormat": "{{service}} RAM Limit",
           "range": true,
           "refId": "B"
@@ -864,7 +864,7 @@
             "uid": null
           },
           "editorMode": "code",
-          "expr": "label_replace((container_memory_working_set_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"} / container_spec_memory_limit_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"}) * 100, \"service\", \"$1\", \"image\", \".*(chat-service|frontend|order-service|auth-service|product-service|cart-service|discount-service|mongo|redis|nginx|rabbitmq).*\")",
+          "expr": "label_replace((container_memory_working_set_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"} / (container_spec_memory_limit_bytes{image=~\".*(chat-service|nginx|redis|mongo|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service).*\"} > 0 or on() machine_memory_bytes)) * 100, \"service\", \"$1\", \"image\", \".*(chat-service|frontend|order-service|auth-service|product-service|cart-service|discount-service|mongo|redis|nginx|rabbitmq).*\")",
           "legendFormat": "{{service}} RAM %",
           "range": true,
           "refId": "A"

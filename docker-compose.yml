@@ -3,7 +3,6 @@ services:
     image: mongo:7
     container_name: mongodb-repl
     restart: always
-    mem_limit: 768m
     ports:
       - "27018:27017"
     volumes:
@@ -44,7 +43,6 @@ services:
     image: redis:7-alpine
     container_name: redis-cache
     restart: always
-    mem_limit: 64m
     ports:
       - "6379:6379"
     networks:
@@ -54,12 +52,11 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     restart: always
-    mem_limit: 512m
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: admin
+      RABQUITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password
     healthcheck:
       test: rabbitmq-diagnostics -q ping
@@ -73,7 +70,6 @@ services:
     build: ./services/auth-service
     container_name: auth-service
     restart: always
-    mem_limit: 192m
     ports:
       - "3001:3001"
     environment:
@@ -101,7 +97,6 @@ services:
     build: ./services/product-service
     container_name: product-service
     restart: always
-    mem_limit: 192m
     ports:
       - "3002:3002"
     environment:
@@ -130,7 +125,6 @@ services:
     build: ./services/order-service
     container_name: order-service
     restart: always
-    mem_limit: 256m
     ports:
       - "3004:3004"
     environment:
@@ -170,7 +164,6 @@ services:
     build: ./services/cart-service
     container_name: cart-service
     restart: always
-    mem_limit: 192m
     ports:
       - "3005:3005"
     environment:
@@ -192,7 +185,6 @@ services:
     build: ./services/discount-service
     container_name: discount-service
     restart: always
-    mem_limit: 192m
     ports:
       - "3006:3006"
     environment:
@@ -213,7 +205,6 @@ services:
   chat-service:
     build: ./services/chat-service
     restart: always
-    mem_limit: 1024m
     environment:
       PORT: 3007
       NODE_ENV: production
@@ -231,7 +222,6 @@ services:
     build: ./frontend
     container_name: frontend
     restart: always
-    mem_limit: 256m
     ports:
       - "3000:3000"
     volumes:
@@ -255,7 +245,6 @@ services:
     image: nginx:1.27-alpine
     container_name: gateway
     restart: always
-    mem_limit: 128m
     depends_on:
       - frontend
       - auth-service
