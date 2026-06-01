@@ -653,6 +653,377 @@
       ],
       "title": "🖥️ HOST VPS TOTAL RAM USAGE (%)",
       "type": "timeseries"
+    },
+    {
+      "id": 13,
+      "type": "row",
+      "title": "🐳 DOCKER STATS FOR CORE SERVICES (REAL-TIME)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 38
+      },
+      "panels": []
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "mappings": [],
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 39
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}[1m])) by (container_label_com_docker_compose_service) * 100",
+          "legendFormat": "{{container_label_com_docker_compose_service}} CPU (%)",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "🐳 CORE SERVICES CPU LOAD RATE (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "mappings": [],
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 39
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "container_memory_working_set_bytes{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}",
+          "legendFormat": "{{container_label_com_docker_compose_service}} RAM Usage",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "container_spec_memory_limit_bytes{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}",
+          "legendFormat": "{{container_label_com_docker_compose_service}} RAM Limit",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "🐳 CORE SERVICES MEMORY USAGE VS LIMIT (MB)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "mappings": [],
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 47
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "(container_memory_working_set_bytes{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"} / container_spec_memory_limit_bytes{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}) * 100",
+          "legendFormat": "{{container_label_com_docker_compose_service}} RAM %",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "🐳 CORE SERVICES RAM CONSUMPTION RATE (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "mappings": [],
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 47
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_receive_bytes_total{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}[1m])) by (container_label_com_docker_compose_service) / 1024",
+          "legendFormat": "{{container_label_com_docker_compose_service}} Rx (KB/s)",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_transmit_bytes_total{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}[1m])) by (container_label_com_docker_compose_service) / 1024",
+          "legendFormat": "{{container_label_com_docker_compose_service}} Tx (KB/s)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "🐳 CORE SERVICES NETWORK I/O BANDWIDTH (KB/s)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": null
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "showPoints": "never"
+          },
+          "mappings": [],
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_fs_reads_bytes_total{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}[1m])) by (container_label_com_docker_compose_service) / 1024",
+          "legendFormat": "{{container_label_com_docker_compose_service}} Read (KB/s)",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": null
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_fs_writes_bytes_total{container_label_com_docker_compose_service=~\"chat-service|gateway|redis|mongodb|rabbitmq|auth-service|product-service|order-service|cart-service|discount-service\"}[1m])) by (container_label_com_docker_compose_service) / 1024",
+          "legendFormat": "{{container_label_com_docker_compose_service}} Write (KB/s)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "🐳 CORE SERVICES DISK BLOCK I/O SPEED (KB/s)",
+      "type": "timeseries"
     }
   ],
   "schemaVersion": 39,
