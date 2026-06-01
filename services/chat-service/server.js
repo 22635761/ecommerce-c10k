@@ -71,7 +71,7 @@ if (geminiApiKey) {
   try {
     genAI = new GoogleGenerativeAI(geminiApiKey);
     geminiModel = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       systemInstruction: `Bạn là "Zero Phone AI" - Trợ lý ảo chính thức của cửa hàng điện thoại Zero Phone. 
 Nhiệm vụ của bạn là hỗ trợ khách hàng tìm kiếm sản phẩm điện thoại trong cửa hàng, cung cấp chính sách đổi trả/bảo hành, và giúp khách hàng tra cứu trạng thái đơn hàng.
 Hãy viết câu trả lời bằng tiếng Việt một cách lễ phép, lịch sự, ngắn gọn và hữu ích.
