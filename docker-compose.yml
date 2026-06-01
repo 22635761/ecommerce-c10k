@@ -7,7 +7,7 @@ services:
       - "27018:27017"
     volumes:
       - mongodb_data:/data/db
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--wiredTigerCacheSizeGB", "0.25"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--port", "27017", "--wiredTigerCacheSizeGB", "0.15"]
     networks:
       - ecommerce-network
     healthcheck:
@@ -52,12 +52,15 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     restart: always
+    mem_limit: 256m
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABQUITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_VM_MEMORY_HIGH_WATERMARK: 0.25
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+hmbs 1024 +hms 1024"
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 10s
