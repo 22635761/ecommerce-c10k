@@ -181,22 +181,26 @@ io.on('connection', async (socket) => {
   if (deviceId) {
     socket.deviceId = deviceId;
     
-    // Chỉ xử lý Redis và Broadcast đối với khách hàng thực tế (không phải k6)
+    // 1. Tăng tổng lượt truy cập cho CẢ người dùng thật và k6 bot để giả lập thực tế
+    try {
+      const sessionKey = `session:${deviceId}`;
+      const isNewSession = await redisClient.set(sessionKey, '1', {
+        NX: true,
+        EX: 1800 // 30 minutes
+      });
+
+      if (isNewSession) {
+        await redisClient.incr('total_visits');
+      }
+    } catch (err) {
+      console.error('[REDIS] Error tracking total visits:', err);
+    }
+
+    // Chỉ xử lý Redis Sorted Set và Broadcast đối với khách hàng thực tế (không phải k6)
     const isK6 = deviceId.startsWith('k6_device');
     if (!isK6) {
       socket.join('normal_users');
       try {
-        // 1. Refresh or create 30-minute session for this device
-        const sessionKey = `session:${deviceId}`;
-        const isNewSession = await redisClient.set(sessionKey, '1', {
-          NX: true,
-          EX: 1800 // 30 minutes
-        });
-
-        if (isNewSession) {
-          await redisClient.incr('total_visits');
-        }
-
         // 2. Add device to active devices set immediately
         await redisClient.zAdd('online_devices', { score: Date.now(), value: deviceId });
 
@@ -207,6 +211,12 @@ io.on('connection', async (socket) => {
       } catch (err) {
         console.error('[REDIS] Error tracking connection:', err);
       }
+    } else {
+      // Đối với k6 bot, vẫn trả về kết quả total_visits mới
+      try {
+        const total = parseInt(await redisClient.get('total_visits') || 1500);
+        socket.emit('visitor_stats', { online: 0, total });
+      } catch (err) {}
     }
   }
 
