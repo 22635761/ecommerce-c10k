@@ -291,259 +291,6 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": null
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisPlacement": "auto",
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "showPoints": "never",
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
-          },
-          "mappings": [],
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "x": 12,
-        "y": 22,
-        "w": 12
-      },
-      "id": 6,
-      "options": {
-        "legend": {
-          "calcs": [
-            "max",
-            "last"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": null
-          },
-          "editorMode": "code",
-          "expr": "process_resident_memory_bytes{service=~\"chat|auth|product|order|cart|discount\"}",
-          "legendFormat": "RAM RSS ({{service}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "💾 CONTAINERS RAM RSS MEMORY USAGE (MEMORY LEAK TEST)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": null
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisPlacement": "auto",
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "showPoints": "never",
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            }
-          },
-          "mappings": [],
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "x": 0,
-        "y": 30,
-        "w": 24
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": null
-          },
-          "editorMode": "code",
-          "expr": "rate(process_cpu_seconds_total{service=~\"chat|auth|product|order|cart|discount\"}[1m]) * 100",
-          "legendFormat": "CPU Load ({{service}})",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "⚙️ CONTAINERS CPU LOAD RATE (%)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": null
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed"
-          },
-          "fixedColor": "#73BF69",
-          "mappings": [],
-          "unit": "reqps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "x": 0,
-        "y": 38,
-        "w": 12
-      },
-      "id": 8,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": null
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(http_requests_total[1m]))",
-          "legendFormat": "Requests per Second (Throughput)",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "🚀 SYSTEM API THROUGHPUT (REQUESTS / SEC)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": null
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "x": 12,
-        "y": 38,
-        "w": 12
-      },
-      "id": 9,
-      "options": {
-        "displayLabels": [
-          "percent",
-          "value"
-        ],
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": null
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(http_requests_total[1m])) by (status)",
-          "legendFormat": "HTTP Status {{status}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "🛑 HTTP RESPONSE STATUS CODE DISTRIBUTION (2XX VS 5XX)",
-      "type": "piechart"
-    },
-    {
       "id": 10,
       "type": "row",
       "title": "🖥️ HOST AZURE VPS SYSTEM RESOURCE METRICS (2 vCPUs, 4GB RAM)",
@@ -552,7 +299,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 30
       },
       "panels": []
     },
@@ -576,7 +323,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 31
       },
       "id": 11,
       "options": {
@@ -625,7 +372,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 47
+        "y": 31
       },
       "id": 12,
       "options": {
